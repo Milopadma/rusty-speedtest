@@ -14,12 +14,11 @@ struct T {
 // function to check for the speed of the connection by downloading a file 
 async fn check_speed<T>() {
 
+    // get the time it took to download the file
+    let start = Instant::now();
     // establish a connection to the server
     let client = Client::new();
-    let  response = client.get("https://cachefly.cachefly.net/100mb.test").send().await.unwrap();
-
-    // check the status code
-    // if the status code is not 200, then the connection failed
+    let  response = client.get("https://cachefly.cachefly.net/1000mb.test").send().await.unwrap();
     if response.status() != 200 {
         println!("Connection failed");
     }
@@ -28,9 +27,6 @@ async fn check_speed<T>() {
     else {
         println!("Connection successful");
     }
-
-    // get the time it took to download the failed
-    let start = Instant::now();
     let _ = response.bytes().await.unwrap();
     let duration = start.elapsed();
     
