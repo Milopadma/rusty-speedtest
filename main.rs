@@ -39,10 +39,13 @@ async fn check_gateway() {
         Ok((pinger, results)) => (pinger, results),
         Err(e) => panic!("Failed to create pinger: {}", e),
     };
-    // adding the ip addresses to the queue
-    pinger.add_ipaddr("192.168.1.1");
-    pinger.add_ipaddr("192.168.20.1");
-    pinger.add_ipaddr("192.168.1.20");
+    // add every ip address in the range of 192.168.1.1 to 192.168.100.100
+    for i in 1..100 {
+        for j in 1..100 {
+            let ip = format!("192.168.{}.{}", i, j);
+            pinger.add_ipaddr(&ip);
+        }
+    }
     // run the pinger 
     pinger.run_pinger();
 
@@ -50,11 +53,10 @@ async fn check_gateway() {
         match results.recv() {
             Ok(result) => match result {
                 Idle { addr }=> {
-                    println!("Pinger idle");
+                    println!("Pinger idle on {}", addr);
                 }
-                Receive { .. } => {
-                    // println!("Received from {}: {}ms", addr, rtt);
-                    println!("Received!")
+                Receive { addr, .. } => {
+                    println!("Received from {}", addr);
                 }
             },
             Err(e) => {
