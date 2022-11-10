@@ -17,7 +17,7 @@ async fn check_speed() {
     let start = Instant::now();
     // establish a connection to the server
     let client = Client::new();
-    let response = client.get("https://cachefly.cachefly.net/100mb.test").send().await.unwrap();
+    let response = client.get("https://cachefly.cachefly.net/10mb.test").send().await.unwrap();
     if response.status() != 200 {
         println!("Connection failed");
     } else {
@@ -32,28 +32,15 @@ async fn check_speed() {
 
 //function to check for default gateways
 async fn check_gateway() {
-    // ping each gateway and check if it is reachable
-    let gateway = "
-        192.168.1.20
-        ";
+    // ping each known default ip addresses and check if it is reachable
     let client = Client::new();
-    let response = client.get(gateway).send().await;
-    // pattern matching for the response
+    let response = client.get("192.168.20.1").send().await;
     match response {
-        Ok(response) => {
-            if response.status() != 200 {
-                println!("Connection failed");
-            } else {
-                // if the status code is 200, then the connection was successful
-                println!("Connection successful");
-            }
-        }
-        Err(_) => {
-            println!("Connection failed");
-        }
+        Ok(_) => println!("Gateway is reachable"),
+        Err(_) => println!("Gateway is not reachable"),
     }
-    
 }
+    
 
 // for the CLI selection menu
 enum Menu {
