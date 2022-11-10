@@ -3,6 +3,8 @@
 use std::time::Instant;
 use reqwest::Client;
 use tokio;
+use fastping_rs::Pinger;
+use fastping_rs::PingResult::{Idle, Receive};
 
 // show how to implement a Type
 struct T {
@@ -33,11 +35,33 @@ async fn check_speed() {
 //function to check for default gateways
 async fn check_gateway() {
     // ping each known default ip addresses and check if it is reachable
-    let client = Client::new();
-    let response = client.get("192.168.20.1").send().await;
-    match response {
-        Ok(_) => println!("Gateway is reachable"),
-        Err(_) => println!("Gateway is not reachable"),
+    let (pinger, results) = match Pinger::new(None, Some(56)) {
+        Ok((pinger, results)) => (pinger, results),
+        Err(e) => panic!("Failed to create pinger: {}", e),
+    };
+    // adding the ip addresses to the queue
+    pinger.add_ipaddr("192.168.1.1");
+    pinger.add_ipaddr("192.168.20.1");
+    pinger.add_ipaddr("192.168.1.20");
+    // run the pinger 
+    pinger.run_pinger();
+
+    loop {
+        match results.recv() {
+            Ok(result) => match result {
+                Idle { addr }=> {
+                    println!("Pinger idle");
+                }
+                Receive { .. } => {
+                    // println!("Received from {}: {}ms", addr, rtt);
+                    println!("Received!")
+                }
+            },
+            Err(e) => {
+                println!("Error: {}", e);
+                break;
+            }
+       }
     }
 }
     
