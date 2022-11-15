@@ -46,7 +46,7 @@ async fn check_gateway() {
             pinger.add_ipaddr(&ip);
         }
     }
-    // run the pinger 
+    // run the pinger
     pinger.run_pinger();
 
     loop {
@@ -66,7 +66,7 @@ async fn check_gateway() {
        }
     }
 }
-    
+
 
 // for the CLI selection menu
 enum Menu {
